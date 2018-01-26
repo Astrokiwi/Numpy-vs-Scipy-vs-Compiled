@@ -1,5 +1,18 @@
 # Python_vs_Fortran
 
+## To use
+
+You need `gfortran` installed, as well as some version of Python. Clone the repo, and go to its directory in your terminal. Then:
+
+```
+make
+python tests.py
+```
+
+C'est tout.
+
+## What/why?
+
 This is an example of a fairly simple calculation that I can't figure out how to do efficiently in Python using the numpy library.
 I find with complex algorithms, it often makes sense to code them in C or Fortran, but from time to time I find examples of fairly
 simple problems that don't appear to have an easy efficient solution in numpy, but have a trivial solution in Fortran.
