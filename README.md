@@ -15,6 +15,7 @@ able to let numpy do all the work as intended.
 
 The results I get myself are:
 
+```
 N= 1000
 two_loop_pot         Result=941647.251511 Time=  2.701507
 magic_index_pot      Result=941647.251511 Time=  0.046448
@@ -43,7 +44,7 @@ fortran_two_loop_pot Result=23641083.151029 Time=  0.043064
 
 numpy_sum            Result=7447.709515 Time=  0.000019
 fortran_sum          Result=7447.709515 Time=  0.000037
-
+```
 
 Basically, the dumb Fortran loop is almost 10 times faster than the cleverer numpy loop. In this situation, it looks like I'm putting in more work to do the numpy loop,
 but ending up with slower code. The Fortran code itself is extremely simple, and combining it with Python through f2py is a single line.
