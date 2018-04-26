@@ -1,4 +1,10 @@
+import sys
+if sys.version_info[0] > 2:
+    raise "Use Python2.7! Unfortunately, Pythran doesn't work on Python3."
+
+
 import numpy as np
+import naive_pythran_pot
 from fort_pot import fort_pot
 from time import time
 import scipy.spatial.distance as ds
@@ -51,24 +57,23 @@ def time_func(f):
     end = time()
     print("%-20s Result=%10f Time=%10f"%(f.__name__,result,end-start))
 
+if __name__ == "__main__":
+    for N in [1000,2000,5000]:
+        print("N=",N)
 
-for N in [1000,2000,5000]:
-    print("N=",N)
-
-    r = np.random.random((N,3))
+        r = np.random.random((N,3))
     
-    print(r.dtype)
-    
-    time_func(two_loop_pot)
-    time_func(magic_index_pot)
-    time_func(one_loop_pot)
-    time_func(scipy_pot)
-    time_func(fortran_two_loop_pot)
+        time_func(two_loop_pot)
+        time_func(magic_index_pot)
+        time_func(one_loop_pot)
+        time_func(scipy_pot)
+        time_func(naive_pythran_pot.naive_pythran_pot)
+        time_func(fortran_two_loop_pot)
 
-    print("")
+        print("")
 
-    time_func(numpy_sum)
-    time_func(fortran_sum)
+        time_func(numpy_sum)
+        time_func(fortran_sum)
 
-    print("\n")
+        print("\n")
 

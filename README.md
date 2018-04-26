@@ -2,7 +2,7 @@
 
 ## To use
 
-You need `gfortran` installed, as well as some version of Python, with numpy and scipy. Clone the repo, and go to its directory in your terminal. Then:
+You need `gfortran` and f2py2.7 installed, as well as Python2.7, with numpy and scipy. We use Python2.7 because it's required by Pythran Clone the repo, and go to its directory in your terminal. Then:
 
 ```
 make
@@ -29,34 +29,40 @@ able to let numpy do all the work as intended.
 The results I get myself are:
 
 ```
-N= 1000
-two_loop_pot         Result=941647.251511 Time=  2.701507
-magic_index_pot      Result=941647.251511 Time=  0.046448
-one_loop_pot         Result=941647.251511 Time=  0.023867
-fortran_two_loop_pot Result=941647.251511 Time=  0.001878
+('N=', 1000)
+two_loop_pot         Result=937094.502420 Time=  2.691333
+magic_index_pot      Result=937094.502420 Time=  0.045650
+one_loop_pot         Result=937094.502420 Time=  0.023352
+scipy_pot            Result=937094.502420 Time=  0.003214
+naive_pythran_pot    Result=937094.502420 Time=  0.001762
+fortran_two_loop_pot Result=937094.502420 Time=  0.001755
 
-numpy_sum            Result=1516.025408 Time=  0.000011
-fortran_sum          Result=1516.025408 Time=  0.000007
-
-
-N= 2000
-two_loop_pot         Result=3748111.565650 Time= 10.963533
-magic_index_pot      Result=3748111.565650 Time=  0.200737
-one_loop_pot         Result=3748111.565650 Time=  0.073511
-fortran_two_loop_pot Result=3748111.565650 Time=  0.006949
-
-numpy_sum            Result=2975.426514 Time=  0.000013
-fortran_sum          Result=2975.426514 Time=  0.000012
+numpy_sum            Result=1493.812211 Time=  0.000012
+fortran_sum          Result=1493.812211 Time=  0.000006
 
 
-N= 5000
-two_loop_pot         Result=23641083.151029 Time= 68.737083
-magic_index_pot      Result=23641083.151033 Time=  1.299696
-one_loop_pot         Result=23641083.151033 Time=  0.366119
-fortran_two_loop_pot Result=23641083.151029 Time=  0.043064
+('N=', 2000)
+two_loop_pot         Result=3786563.248134 Time= 10.923428
+magic_index_pot      Result=3786563.248134 Time=  0.201008
+one_loop_pot         Result=3786563.248134 Time=  0.071522
+scipy_pot            Result=3786563.248134 Time=  0.018071
+naive_pythran_pot    Result=3786563.248134 Time=  0.006900
+fortran_two_loop_pot Result=3786563.248134 Time=  0.006863
 
-numpy_sum            Result=7447.709515 Time=  0.000019
-fortran_sum          Result=7447.709515 Time=  0.000037
+numpy_sum            Result=3013.170319 Time=  0.000015
+fortran_sum          Result=3013.170319 Time=  0.000009
+
+
+('N=', 5000)
+two_loop_pot         Result=23465072.621252 Time= 68.933690
+magic_index_pot      Result=23465072.621249 Time=  1.284691
+one_loop_pot         Result=23465072.621249 Time=  0.360706
+scipy_pot            Result=23465072.621249 Time=  0.143408
+naive_pythran_pot    Result=23465072.621252 Time=  0.042692
+fortran_two_loop_pot Result=23465072.621252 Time=  0.042433
+
+numpy_sum            Result=7538.788984 Time=  0.000036
+fortran_sum          Result=7538.788984 Time=  0.000034
 ```
 
 Basically, the dumb Fortran loop is almost 10 times faster than the cleverer numpy loop. In this situation, it looks like I'm putting in more work to do the numpy loop,
