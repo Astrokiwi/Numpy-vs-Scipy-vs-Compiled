@@ -1,6 +1,7 @@
 import numpy as np
 from fort_pot import fort_pot
 from time import time
+import scipy.spatial.distance as ds
 
 def two_loop_pot(r,soft):
     N = r.shape[0]    
@@ -29,6 +30,10 @@ def magic_index_pot(r,soft):
     pot = np.sum(np.tril(1./dr,-1))
     return pot
 
+#suggestion from Harry Rossides
+def scipy_pot(r,soft):
+   return (1./np.sqrt(ds.pdist(r, 'sqeuclidean')+soft*soft)).sum()
+
 def fortran_two_loop_pot(r,soft):
     return fort_pot.two_loop_pot(r,soft)
 
@@ -52,9 +57,12 @@ for N in [1000,2000,5000]:
 
     r = np.random.random((N,3))
     
+    print(r.dtype)
+    
     time_func(two_loop_pot)
     time_func(magic_index_pot)
     time_func(one_loop_pot)
+    time_func(scipy_pot)
     time_func(fortran_two_loop_pot)
 
     print("")

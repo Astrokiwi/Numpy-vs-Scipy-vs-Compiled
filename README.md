@@ -2,7 +2,7 @@
 
 ## To use
 
-You need `gfortran` installed, as well as some version of Python. Clone the repo, and go to its directory in your terminal. Then:
+You need `gfortran` installed, as well as some version of Python, with numpy and scipy. Clone the repo, and go to its directory in your terminal. Then:
 
 ```
 make
