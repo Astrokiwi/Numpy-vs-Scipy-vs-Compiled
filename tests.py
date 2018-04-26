@@ -1,6 +1,6 @@
 import sys
 if sys.version_info[0] > 2:
-    raise "Use Python2.7! Unfortunately, Pythran doesn't work on Python3."
+    raise Exception("Use Python2.7! Unfortunately, Pythran doesn't work on Python3.")
 
 
 import numpy as np
