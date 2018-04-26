@@ -2,13 +2,12 @@ import sys
 if sys.version_info[0] > 2:
     raise Exception("Use Python2.7! Unfortunately, Pythran doesn't work on Python3.")
 
-
+print("importing and compiling")
 import numpy as np
 import naive_pythran_pot
 from fort_pot import fort_pot
-#uncomment for cython
-#import pyximport; pyximport.install()
-#from cython_pot import cython_pot
+import pyximport; pyximport.install()
+from cython_pot import cython_pot
 from time import time
 import scipy.spatial.distance as ds
 
@@ -70,10 +69,9 @@ if __name__ == "__main__":
         time_func(magic_index_pot)
         time_func(one_loop_pot)
         time_func(scipy_pot)
+        time_func(cython_pot)
         time_func(naive_pythran_pot.naive_pythran_pot)
         time_func(fortran_two_loop_pot)
-        #uncomment for cython
-        #time_func(cython_pot)
         print("")
 
         time_func(numpy_sum)
