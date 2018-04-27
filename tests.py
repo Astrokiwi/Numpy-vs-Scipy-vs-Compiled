@@ -4,11 +4,16 @@ if sys.version_info[0] > 2:
 
 print("importing and compiling")
 import numpy as np
+from time import time
+
 import naive_pythran_pot
+
 from fort_pot import fort_pot
+
+#Cython code by Pip Grylls
 import pyximport; pyximport.install()
 from cython_pot import cython_pot
-from time import time
+
 import scipy.spatial.distance as ds
 
 def two_loop_pot(r,soft):

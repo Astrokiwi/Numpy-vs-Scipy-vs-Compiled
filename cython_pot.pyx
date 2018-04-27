@@ -3,7 +3,6 @@ cimport cython
 from libc.math cimport pow as c_pow
 from libc.math cimport sqrt as c_sqrt
 
-
 def cython_pot(double[:, :] r, double soft):
     cdef:
         int N = r.shape[0]
