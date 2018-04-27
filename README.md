@@ -2,7 +2,7 @@
 
 ## To use
 
-You need `gfortran` and f2py2.7 installed, as well as Python2.7, with numpy and scipy. We use Python2.7 because it's required by Pythran Clone the repo, and go to its directory in your terminal. Then:
+You need `gfortran`, `f2py2.7`, and `pythran` installed, as well as Python2.7, with numpy and scipy. We use Python2.7 because it's required by Pythran (apparently he's working on support for 3+ though). Clone the repo, and go to its directory in your terminal. Then:
 
 ```
 make
@@ -14,60 +14,65 @@ C'est tout.
 ## What/why?
 
 This is an example of a fairly simple calculation that I can't figure out how to do efficiently in Python using the numpy library.
-I find with complex algorithms, it often makes sense to code them in C or Fortran, but from time to time I find examples of fairly
-simple problems that don't appear to have an easy efficient solution in numpy, but have a trivial solution in Fortran.
+I find with complex algorithms, it often makes sense to code them in a compiled language, but from time to time I find examples of fairly
+simple problems that don't appear to have an easy efficient solution in numpy, but have a trivial solution in something like Fortran.
 This particularly comes up in O(N^2) type problems, where for some vector of values a_i, I want to calculate a matrix of values
 i.e. A_{i,j} = f(a_i,a_j), or something like a vector b_i = sum_j{f(a_i,a_j)}
 
 As an example, here I calculate the potential of a bunch of points, distributed randomly in three dimensions, using a "softened" potential.
 This is a fairly simple calculation, but it doesn't appear to be simple to calculate it quickly in Python.
 
-I use a "two loop" naive method in both Python and Fortran, a "one loop" cleverer method in Python, and a "magic index" cleverest method in Python.
+I use a "two loop" naive method in Python, Fortran, Cython, and Pythran, a "one loop" cleverer method in Python, a "magic index" clevererer method in Python, and a `scipy` cleverest method in Python.
 By comparison, I also do a direct O(N) sum of all the position coordinates, to show that numpy can actually be just as fast as Fortran if you're
 able to let numpy do all the work as intended.
 
 The results I get myself are:
 
 ```
+```importing and compiling
 ('N=', 1000)
-two_loop_pot         Result=937094.502420 Time=  2.691333
-magic_index_pot      Result=937094.502420 Time=  0.045650
-one_loop_pot         Result=937094.502420 Time=  0.023352
-scipy_pot            Result=937094.502420 Time=  0.003214
-naive_pythran_pot    Result=937094.502420 Time=  0.001762
-fortran_two_loop_pot Result=937094.502420 Time=  0.001755
+two_loop_pot         Result=933088.735980 Time=  2.644885
+magic_index_pot      Result=933088.735980 Time=  0.045635
+one_loop_pot         Result=933088.735980 Time=  0.022956
+scipy_pot            Result=933088.735980 Time=  0.003267
+cython_pot           Result=933088.735980 Time=  0.002152
+naive_pythran_pot    Result=933088.735980 Time=  0.001759
+fortran_two_loop_pot Result=933088.735980 Time=  0.001756
 
-numpy_sum            Result=1493.812211 Time=  0.000012
-fortran_sum          Result=1493.812211 Time=  0.000006
+numpy_sum            Result=1527.745149 Time=  0.000012
+fortran_sum          Result=1527.745149 Time=  0.000006
 
 
 ('N=', 2000)
-two_loop_pot         Result=3786563.248134 Time= 10.923428
-magic_index_pot      Result=3786563.248134 Time=  0.201008
-one_loop_pot         Result=3786563.248134 Time=  0.071522
-scipy_pot            Result=3786563.248134 Time=  0.018071
-naive_pythran_pot    Result=3786563.248134 Time=  0.006900
-fortran_two_loop_pot Result=3786563.248134 Time=  0.006863
+two_loop_pot         Result=3740364.814098 Time= 11.021113
+magic_index_pot      Result=3740364.814098 Time=  0.200300
+one_loop_pot         Result=3740364.814098 Time=  0.074092
+scipy_pot            Result=3740364.814098 Time=  0.018233
+cython_pot           Result=3740364.814098 Time=  0.008139
+naive_pythran_pot    Result=3740364.814098 Time=  0.006886
+fortran_two_loop_pot Result=3740364.814098 Time=  0.006892
 
-numpy_sum            Result=3013.170319 Time=  0.000015
-fortran_sum          Result=3013.170319 Time=  0.000009
+numpy_sum            Result=2995.654231 Time=  0.000016
+fortran_sum          Result=2995.654231 Time=  0.000010
 
 
 ('N=', 5000)
-two_loop_pot         Result=23465072.621252 Time= 68.933690
-magic_index_pot      Result=23465072.621249 Time=  1.284691
-one_loop_pot         Result=23465072.621249 Time=  0.360706
-scipy_pot            Result=23465072.621249 Time=  0.143408
-naive_pythran_pot    Result=23465072.621252 Time=  0.042692
-fortran_two_loop_pot Result=23465072.621252 Time=  0.042433
+two_loop_pot         Result=23521185.786613 Time= 68.735171
+magic_index_pot      Result=23521185.786608 Time=  1.282245
+one_loop_pot         Result=23521185.786608 Time=  0.365913
+scipy_pot            Result=23521185.786608 Time=  0.143840
+cython_pot           Result=23521185.786613 Time=  0.050583
+naive_pythran_pot    Result=23521185.786613 Time=  0.042717
+fortran_two_loop_pot Result=23521185.786613 Time=  0.042645
 
-numpy_sum            Result=7538.788984 Time=  0.000036
-fortran_sum          Result=7538.788984 Time=  0.000034
-```
+numpy_sum            Result=7486.093382 Time=  0.000039
+fortran_sum          Result=7486.093382 Time=  0.000036```
 
-Basically, the dumb Fortran loop is almost 10 times faster than the cleverer numpy loop. In this situation, it looks like I'm putting in more work to do the numpy loop,
-but ending up with slower code. The Fortran code itself is extremely simple, and combining it with Python through f2py is a single line.
+My conclusions are:
 
-So here is the question: is this really the best solution here? Is a custom Fortran module really the best solution, even for this fairly simple problem, or is there a way
-to do this more efficiently in numpy? And if there is a more efficient numpy solution, is it worth the effort to use a more complex algorithm when a trivial Fortran code is
-faster? 
+- A big dumb series of nested loops is terrible in pure Python, but works really well in any compiled form. You can use numpy array operations to speed things up quite a lot though, up to maybe 8-9 times slower than the compiled form.
+
+- All of the compiled forms take about the same time, so it doesn't matter if you use Cython, Pythran, or Fortran (it's probably best to stick to whichever one you already know). (Note that Pythran doesn't really support Python3 yet either). (Additional side-note: the specific order of these three depends on your hardware, compiler, optimisation options etc, but they're all generally comparable)
+
+- If you really dig through the libraries, you might find a scipy function that *almost* does what you want anyway, at about 1/3rd the speed of writing out the loop explicitly and compiling it. This gives more compact code, but it took multiple people searching the docs to find the one correct function.
+
