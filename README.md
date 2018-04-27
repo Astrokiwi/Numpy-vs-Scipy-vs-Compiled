@@ -66,7 +66,8 @@ naive_pythran_pot    Result=23521185.786613 Time=  0.042717
 fortran_two_loop_pot Result=23521185.786613 Time=  0.042645
 
 numpy_sum            Result=7486.093382 Time=  0.000039
-fortran_sum          Result=7486.093382 Time=  0.000036```
+fortran_sum          Result=7486.093382 Time=  0.000036
+```
 
 My conclusions are:
 
