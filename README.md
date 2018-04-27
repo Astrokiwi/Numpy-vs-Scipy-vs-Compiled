@@ -69,7 +69,7 @@ numpy_sum            Result=7486.093382 Time=  0.000039
 fortran_sum          Result=7486.093382 Time=  0.000036
 ```
 
-My conclusions are:
+## Conclusions
 
 - A big dumb series of nested loops is terrible in pure Python, but works really well in any compiled form. You can use numpy array operations to speed things up quite a lot though, up to maybe 8-9 times slower than the compiled form.
 
@@ -77,3 +77,10 @@ My conclusions are:
 
 - If you really dig through the libraries, you might find a scipy function that *almost* does what you want anyway, at about 1/3rd the speed of writing out the loop explicitly and compiling it. This gives more compact code, but it took multiple people searching the docs to find the one correct function.
 
+## Appendices:
+
+# Clarification
+I am about to post this to Reddit, and so I feel the need to make this clear before somebody "corrects" me: of course the numpy and scipy libraries are compiled as well. I'm really making the comparison between using standard libraries, and writing your own custom loops. The point is that there are fairly simple nested loops that the standard numerical libraries don't cover easily, and even if you do eventually find a library function that is kinda what you want, you might do better to use something compiled like Cython or f2py.
+
+# Why bother with Fortran?
+Because Fortran has nice array syntax, and writing heavy numerical work in Fortran is really not all that different form writing it in Python. Many people in the numerical field have experience with Fortran, and then using f2py can come out simpler than trying to figure out Cython. The code ends up almost looking identical anyway - Fortran just has more verbose variable declarations, and index-1 arrays. There is very little difference between Cython code and Fortran. Of course, if you already know Python, there's no point to learn a new language to do something you can already do in Cython.
