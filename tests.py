@@ -1,20 +1,43 @@
-import sys
-if sys.version_info[0] > 2:
-    raise Exception("Use Python2.7! Unfortunately, Pythran doesn't work on Python3.")
-
 print("importing and compiling")
-import numpy as np
+import sys
+import os
 from time import time
 
-import naive_pythran_pot
+try:
+    import numpy as np
+except:
+    print("oh come on, you need numpy at the bare minimum")
+    sys.exit()
 
-from fort_pot import fort_pot
+try:
+    import naive_pythran_pot
+    pythran_loaded = True
+except:
+    pythran_loaded = False
 
-#Cython code by Pip Grylls
-import pyximport; pyximport.install()
-from cython_pot import cython_pot
+try:
+    from fort_pot import fort_pot
+    fortran_loaded = True
+except:
+    fortran_loaded = False
 
-import scipy.spatial.distance as ds
+try:
+    #Cython code by Pip Grylls
+    import pyximport; pyximport.install()
+    from cython_pot import cython_pot
+    cython_loaded = True
+except:
+    cython_loaded = False
+
+try:
+    import scipy.spatial.distance as ds
+    scipy_loaded = True
+except:
+    scipy_loaded = False
+
+
+
+# define numpy/scipy functions
 
 def two_loop_pot(r,soft):
     N = r.shape[0]    
@@ -47,8 +70,12 @@ def magic_index_pot(r,soft):
 def scipy_pot(r,soft):
    return (1./np.sqrt(ds.pdist(r, 'sqeuclidean')+soft*soft)).sum()
 
+# Fortran wrappers
 def fortran_two_loop_pot(r,soft):
     return fort_pot.two_loop_pot(r,soft)
+
+def fortran_one_loop_pot(r,soft):
+    return fort_pot.one_loop_pot(r,soft)
 
 def fortran_sum(r,soft):
     return fort_pot.fortran_sum(r)
@@ -56,8 +83,7 @@ def fortran_sum(r,soft):
 def numpy_sum(r,soft):
     return np.sum(r)
 
-soft = 1.e-2
-
+#function timer wrapper wrapper - could be a decorator?
 def time_func(f):
     start = time()
     result = f(r,soft)
@@ -65,22 +91,35 @@ def time_func(f):
     print("%-20s Result=%10f Time=%10f"%(f.__name__,result,end-start))
 
 if __name__ == "__main__":
-    for N in [1000,2000,5000]:
-        print("N=",N)
 
-        r = np.random.random((N,3))
+    soft = 1.e-2
+
+#     for N in [1000,2000,5000]:
+    for N in [1000]:
+        for repeat_runs in range(2):
+            print("N=",N)
+
+            r = np.random.random((N,3))
     
-        time_func(two_loop_pot)
-        time_func(magic_index_pot)
-        time_func(one_loop_pot)
-        time_func(scipy_pot)
-        time_func(cython_pot)
-        time_func(naive_pythran_pot.naive_pythran_pot)
-        time_func(fortran_two_loop_pot)
-        print("")
+            time_func(two_loop_pot)
+            time_func(magic_index_pot)
+            time_func(one_loop_pot)
+            time_func(scipy_pot)
+            if cython_loaded:
+                time_func(cython_pot)
+            if pythran_loaded:
+                time_func(naive_pythran_pot.naive_pythran_pot)
+            if fortran_loaded:
+                time_func(fortran_two_loop_pot)
+                time_func(fortran_one_loop_pot)
 
-        time_func(numpy_sum)
-        time_func(fortran_sum)
+            print("")
 
-        print("\n")
+            time_func(numpy_sum)
 
+            if fortran_loaded:
+                time_func(fortran_sum)
+
+            print("\n")
+
+        os.system("julia potential_test.jl %d"%N) # can't get Julia to run with conda Python, run from terminal
