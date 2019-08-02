@@ -44,9 +44,9 @@ end
 
 using Random
 
-N=parse(Int64,ARGS[1])
-r = Random.rand(N,3)
-h = 0.01
+const N = parse(Int64,ARGS[1])
+const r = Random.rand(N,3)
+const h = 0.01
 
 # run twice, so timing isn't dominated by compile time
 for i=1:2
