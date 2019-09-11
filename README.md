@@ -26,9 +26,10 @@ This is a fairly simple calculation, but it doesn't appear to be simple to calcu
 
 I use a "two loop" naive method in Python, Fortran, Cython, and Pythran, a "one loop" cleverer method in both Python and Fortran, a "magic index" clevererer method in Python, and a `scipy` cleverest method in Python. In Julia, I implement the one loop and two loop forms, but also a further unravelled "three loop" form, where the sum of the 3-vectors is also explicitly unravelled. The Cython version also uses the tree loop form.
 
-
 By comparison, I also do a direct O(N) sum of all the position coordinates, to show that numpy can actually be about as fast as Fortran if you're
 able to let numpy do all the work as intended.
+
+Everything is run twice, just to clear out any "just in time" compilations that might dominate the computation time. I think we've got it set up now so that all the compilations are done ahead of time though.
 
 The results I get myself are:
 
@@ -36,43 +37,43 @@ The results I get myself are:
 ```importing and compiling
 N= 1000
 First run - just in case anything needs to be 'just-in-time' compiled
-two_loop_pot         Result=946233.716137 Time=  3.632540
-magic_index_pot      Result=946233.716137 Time=  0.091652
-one_loop_pot         Result=946233.716137 Time=  0.038854
-scipy_pot            Result=946233.716137 Time=  0.007405
-cython_pot           Result=946233.716137 Time=  0.004435
-naive_pythran_pot    Result=946233.716137 Time=  2.686939
-fortran_two_loop_pot Result=946233.716137 Time=  0.004359
-fortran_one_loop_pot Result=948443.163504 Time=  0.005141
+two_loop_pot         Result=919503.068947 Time=  3.917400
+magic_index_pot      Result=919503.068947 Time=  0.150114
+one_loop_pot         Result=919503.068947 Time=  0.048202
+scipy_pot            Result=919503.068947 Time=  0.009160
+cython_pot           Result=919503.068947 Time=  0.004740
+naive_pythran_pot    Result=919503.068947 Time=  2.873673
+fortran_two_loop_pot Result=919503.068947 Time=  0.004374
+fortran_one_loop_pot Result=920874.508384 Time=  0.005165
 
-numpy_sum            Result=1483.605456 Time=  0.000035
-fortran_sum          Result=1483.605456 Time=  0.000008
+numpy_sum            Result=1510.635577 Time=  0.000031
+fortran_sum          Result=1510.635577 Time=  0.000008
 
 
 N= 1000
 Second run - everything should be compiled
-two_loop_pot         Result=942464.855379 Time=  4.003923
-magic_index_pot      Result=942464.855379 Time=  0.061567
-one_loop_pot         Result=942464.855379 Time=  0.039547
-scipy_pot            Result=942464.855379 Time=  0.004856
-cython_pot           Result=942464.855379 Time=  0.004521
-naive_pythran_pot    Result=942464.855379 Time=  2.697282
-fortran_two_loop_pot Result=942464.855379 Time=  0.004497
-fortran_one_loop_pot Result=944637.079640 Time=  0.005240
+two_loop_pot         Result=938903.692583 Time=  4.288951
+magic_index_pot      Result=938903.692583 Time=  0.062831
+one_loop_pot         Result=938903.692583 Time=  0.053735
+scipy_pot            Result=938903.692583 Time=  0.004250
+cython_pot           Result=938903.692583 Time=  0.004406
+naive_pythran_pot    Result=938903.692583 Time=  2.884020
+fortran_two_loop_pot Result=938903.692583 Time=  0.004511
+fortran_one_loop_pot Result=940878.335147 Time=  0.005559
 
-numpy_sum            Result=1522.736535 Time=  0.000034
-fortran_sum          Result=1522.736535 Time=  0.000008
+numpy_sum            Result=1495.110643 Time=  0.000042
+fortran_sum          Result=1495.110643 Time=  0.000010
 
 
 N=1000
 First Julia run to compile everything
-julia threeloop  0.099964 seconds (96.51 k allocations: 5.301 MiB, 59.73% gc time)
-julia twoloop  0.496905 seconds (2.89 M allocations: 158.171 MiB, 5.15% gc time)
-julia oneloop  0.719473 seconds (2.08 M allocations: 122.495 MiB, 3.18% gc time)
+julia threeloop  0.004722 seconds
+julia twoloop  0.311685 seconds (2.00 M allocations: 114.326 MiB, 20.26% gc time)
+julia oneloop  0.019122 seconds (13.30 k allocations: 19.821 MiB, 7.87% gc time)
 Julia run, with everything compiled (hopefully)
-julia threeloop  0.004292 seconds (1 allocation: 16 bytes)
-julia twoloop  0.259570 seconds (2.00 M allocations: 114.326 MiB, 5.76% gc time)
-julia oneloop  0.023755 seconds (40.72 k allocations: 20.346 MiB)
+julia threeloop  0.004425 seconds
+julia twoloop  0.259677 seconds (2.00 M allocations: 114.326 MiB, 3.61% gc time)
+julia oneloop  0.015529 seconds (13.30 k allocations: 19.821 MiB, 8.97% gc time)
 ```
 
 ## Conclusions
