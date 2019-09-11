@@ -1,5 +1,12 @@
+"""
+    softened_potential_threeloop(r,h)
+
+Completely unrolled potential sum.
+
+I have found this is the only version that gives comparable performance
+to C/Fortran/etc, but it is more verbose than you'd hope
+"""
 function softened_potential_threeloop(r,h)
-    # simple unwrapped loop
     N = size(r)[1]
     pot = 0.
     h2 = h^2
@@ -17,6 +24,14 @@ function softened_potential_threeloop(r,h)
     return pot
 end
 
+"""
+    softened_potential_twoloop(r,h)
+
+Partially unrolled potential sum.
+
+The innermost loop adds two 3-vectors. Julia creates a lot of intermediate
+vectors here and it gets slow.
+"""
 function softened_potential_twoloop(r,h)
     # simple unwrapped loop
     N = size(r)[1]
@@ -30,6 +45,15 @@ function softened_potential_twoloop(r,h)
     return pot
 end
 
+"""
+    softened_potential_oneloop(r,h)
+
+The most concise potential sum, only using vector notation as you would in numpy etc
+
+This creates some intermediate values, but oddly creates fewer than the twoloop version.
+This may be a reasonable compromise between speed and simplicity. It's slower than a
+simple Fortran loop, and comparable to the same algorithm in numpy.
+"""
 function softened_potential_oneloop(r,h)
     # vector operations
     n = size(r)[1]
@@ -48,8 +72,15 @@ N = parse(Int64,ARGS[1])
 r = Random.rand(N,3)
 h = 0.01
 
+println("N=",N)
+
 # run twice, so timing isn't dominated by compile time
 for i=1:2
+    if i==1
+        println("First Julia run to compile everything")
+    else
+        println("Julia run, with everything compiled (hopefully)")
+    end
     print("julia threeloop")
     @time softened_potential_threeloop(r,h)
     print("julia twoloop")
