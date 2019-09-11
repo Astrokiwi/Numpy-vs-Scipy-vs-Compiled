@@ -1,14 +1,14 @@
-# cython: profile=True, boundscheck=False, wraparound=False, nonecheck=False, cdivision = True
+# cython: profile=False, boundscheck=False, wraparound=False, nonecheck=False, cdivision = True
 cimport cython
 from libc.math cimport pow as c_pow
 from libc.math cimport sqrt as c_sqrt
 
-def cython_pot(double[:, :] r, double soft):
+cpdef double cython_pot(double[:, :] r, double soft):
     cdef:
         int N = r.shape[0]
         double soft2 = c_pow(soft,2)
         double pot = 0.0
-        int i, j
+        int i, j, k
         double dr
 
     for i in range(N-1):
