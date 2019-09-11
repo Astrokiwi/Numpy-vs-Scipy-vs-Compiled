@@ -6,13 +6,13 @@ Completely unrolled potential sum.
 I have found this is the only version that gives comparable performance
 to C/Fortran/etc, but it is more verbose than you'd hope
 """
-function softened_potential_threeloop(r,h)
-    N = size(r)[1]
-    pot = 0.
-    h2 = h^2
+function softened_potential_threeloop(r,h)::Float64
+    N::Int64 = size(r)[1]
+    pot::Float64 = 0.
+    h2::Float64 = h^2
     @inbounds for i=1:N-1
         for j=i+1:N
-            d=0.
+            d::Float64=0.
             for k=1:3
                 @views d+=(r[i,k]-r[j,k]).^2
             end
@@ -32,11 +32,11 @@ Partially unrolled potential sum.
 The innermost loop adds two 3-vectors. Julia creates a lot of intermediate
 vectors here and it gets slow.
 """
-function softened_potential_twoloop(r,h)
+function softened_potential_twoloop(r,h)::Float64
     # simple unwrapped loop
-    N = size(r)[1]
-    pot = 0.
-    h2 = h^2
+    N::Int64 = size(r)[1]
+    pot::Float64 = 0.
+    h2::Float64 = h^2
     @inbounds for i=1:N-1
         for j=i+1:N
             @views pot+=sqrt((sum((r[i,:].-r[j,:]).^2).+h2)).^-1
@@ -54,37 +54,38 @@ This creates some intermediate values, but oddly creates fewer than the twoloop 
 This may be a reasonable compromise between speed and simplicity. It's slower than a
 simple Fortran loop, and comparable to the same algorithm in numpy.
 """
-function softened_potential_oneloop(r,h)
+function softened_potential_oneloop(r,h)::Float64
     # vector operations
-    n = size(r)[1]
-    pot = 0.
-    h2 = h^2
+    N::Int64 = size(r)[1]
+    pot::Float64 = 0.
+    h2::Float64 = h^2
     @inbounds for i=1:N-1
         @views pot+=sum(sqrt.((sum((r[i,:]'.-r[i+1:N,:]).^2,dims=2).+h2)).^-1)
     end
     return pot
 end
 
+function Test()
+    N::Int64 = parse(Int64,ARGS[1])
+    r::Array{Float64} = rand(N,3)
+    h::Float64 = 0.01
 
-using Random
+    println("N=",N)
 
-N = parse(Int64,ARGS[1])
-r = Random.rand(N,3)
-h = 0.01
-
-println("N=",N)
-
-# run twice, so timing isn't dominated by compile time
-for i=1:2
-    if i==1
-        println("First Julia run to compile everything")
-    else
-        println("Julia run, with everything compiled (hopefully)")
+    # run twice, so timing isn't dominated by compile time
+    for i=1:2
+        if i==1
+            println("First Julia run to compile everything")
+        else
+            println("Julia run, with everything compiled (hopefully)")
+        end
+        print("julia threeloop")
+        @time softened_potential_threeloop(r,h)
+        print("julia twoloop")
+        @time softened_potential_twoloop(r,h)
+        print("julia oneloop")
+        @time softened_potential_oneloop(r,h)
     end
-    print("julia threeloop")
-    @time softened_potential_threeloop(r,h)
-    print("julia twoloop")
-    @time softened_potential_twoloop(r,h)
-    print("julia oneloop")
-    @time softened_potential_oneloop(r,h)
 end
+
+Test()
