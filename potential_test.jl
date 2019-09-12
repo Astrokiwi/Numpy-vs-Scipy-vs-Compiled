@@ -10,17 +10,21 @@ function softened_potential_threeloop(r,h)::Float64
     N::Int64 = size(r)[1]
     pot::Float64 = 0.
     h2::Float64 = h^2
+
     @inbounds for i=1:N-1
         for j=i+1:N
             d::Float64=0.
+            
             for k=1:3
                 @views d+=(r[i,k]-r[j,k]).^2
             end
+            
             d+=h2
             d = sqrt(d)^-1
             pot+=d
         end
     end
+    
     return pot
 end
 
