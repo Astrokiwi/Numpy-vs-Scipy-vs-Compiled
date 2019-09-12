@@ -5,10 +5,7 @@ module fort_pot
             
             integer :: N
             real(kind=8), dimension(N,3) :: r
-            real(kind=8) :: soft
-            
-            real(kind=8) :: pot
-
+            real(kind=8) :: soft,pot
             integer :: i,j
             real(kind=8) :: soft2,dr
             
